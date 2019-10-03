@@ -21,13 +21,14 @@ repositories {
 }
 
 dependencies {
-    // This dependency is used by the application.
-    implementation 'com.google.guava:guava:28.0-jre'
+
+    compile 'org.json:json:20180813'
 
     // Use JUnit test framework
     testImplementation 'io.rest-assured:rest-assured:4.1.1'
     testImplementation 'io.rest-assured:json-schema-validator:4.1.1'
     testImplementation 'junit:junit:4.12'
+
 }
 
 application {

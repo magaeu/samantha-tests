@@ -8,7 +8,7 @@ public class BaseTest {
 
     @BeforeClass
     public static void setup() {
-        RestAssured.baseURI = "https://jsonplaceholder.typicode.com/";
+        RestAssured.baseURI = "https://jsonplaceholder.typicode.com";
     }
 
     @AfterClass

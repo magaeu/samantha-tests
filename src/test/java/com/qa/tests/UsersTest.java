@@ -16,7 +16,7 @@ public class UsersTest extends BaseTest {
                 .contentType(ContentType.JSON)
                 .pathParam("id", "3")
         .when()
-            .get("users/{id}")
+            .get("/users/{id}")
         .then()
             .statusCode(200)
             .body("username", equalTo("Samantha"));
