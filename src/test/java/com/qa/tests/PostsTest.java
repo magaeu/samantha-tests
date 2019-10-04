@@ -1,6 +1,7 @@
 package com.qa.tests;
 
 import com.qa.setup.BaseTest;
+import com.qa.utils.Helpers;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import org.json.JSONArray;
@@ -17,13 +18,12 @@ public class PostsTest extends BaseTest {
     public void testGetPostByUserId() {
 
         Response response = given()
-                .contentType(ContentType.JSON)
+                .spec(getSpec())
                 .queryParam("userId", "1")
                 .when()
-                .get("/posts")
+                .get("posts")
                 .then()
-                .statusCode(200)
-                .contentType(ContentType.JSON)
+                .spec(Helpers.checkStatusOKAndContentTypeJson())
                 .extract()
                 .response();
 
