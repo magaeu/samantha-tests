@@ -3,13 +3,55 @@ package com.qa.tests;
 import com.qa.dto.UserDTO;
 import com.qa.setup.BaseTest;
 import com.qa.utils.Helpers;
+import io.restassured.response.Response;
 import org.apache.http.HttpStatus;
 import org.junit.Test;
 
-import static io.restassured.RestAssured.given;
+import static io.restassured.RestAssured.*;
+import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class UsersTest extends BaseTest {
+
+    @Test
+    public void testValidateSchema() {
+
+        get("https://jsonplaceholder.typicode.com/users")
+                .then()
+                .body(matchesJsonSchemaInClasspath("json/users.json"));
+
+    }
+
+    @Test
+    public void testGetAllUsers() {
+
+        UserDTO[] retrievedUsers = given()
+                .spec(getReq())
+                .when()
+                .get("users")
+                .then()
+                .extract()
+                .body()
+                .as(UserDTO[].class);
+
+        assertThat(retrievedUsers).isNotEmpty();
+        assertThat(retrievedUsers).hasSizeGreaterThan(0);
+
+    }
+
+    @Test
+    public void testGetAllUsersNotFound() {
+
+        Response resp = when()
+                .get("https://jsonplaceholder.typicode.com/userss")
+                .then()
+                .spec(getResp())
+                .extract()
+                .response();
+
+        assertThat(resp.statusCode()).isEqualTo(HttpStatus.SC_NOT_FOUND);
+
+    }
 
     @Test
     public void testGetUserById() {
@@ -20,12 +62,11 @@ public class UsersTest extends BaseTest {
                 .setEmail("Nathan@yesenia.net");
 
         UserDTO[] retrievedUser = given()
-                .spec(getSpec())
+                .spec(getReq())
                 .param("id", "3")
                 .when()
                 .get("users")
                 .then()
-                .spec(Helpers.checkStatusOKAndContentTypeJson())
                 .extract()
                 .body()
                 .as(UserDTO[].class);
@@ -33,22 +74,20 @@ public class UsersTest extends BaseTest {
         assertThat(retrievedUser[0].getName()).isEqualTo(newUser.getName());
         assertThat(retrievedUser[0].getUsername()).isEqualTo(newUser.getUsername());
         assertThat(retrievedUser[0].getEmail()).isEqualTo(newUser.getEmail());
+
     }
 
     @Test
-    public void testGetUserByIdEmpty() {
+    public void testGetUserByIdNotFound() {
 
-        UserDTO[] retrievedUser = given()
-                .spec(getSpec())
-                .param("id", "11")
-                .when()
-                .get("users")
+        Response resp = when()
+                .get("https://jsonplaceholder.typicode.com/users/11")
                 .then()
-                .statusCode(HttpStatus.SC_OK)
+                .spec(getResp())
                 .extract()
-                .body()
-                .as(UserDTO[].class);
+                .response();
 
-        assertThat(retrievedUser).isEmpty();
+        assertThat(resp.statusCode()).isEqualTo(HttpStatus.SC_NOT_FOUND);
+
     }
 }

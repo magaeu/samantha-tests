@@ -2,7 +2,6 @@ package com.qa.tests;
 
 import com.qa.setup.BaseTest;
 import com.qa.utils.Helpers;
-import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -10,7 +9,6 @@ import org.junit.Test;
 
 import static io.restassured.RestAssured.given;
 import static junit.framework.TestCase.*;
-import static org.hamcrest.Matchers.equalTo;
 
 public class PostsTest extends BaseTest {
 
@@ -18,7 +16,7 @@ public class PostsTest extends BaseTest {
     public void testGetPostByUserId() {
 
         Response response = given()
-                .spec(getSpec())
+                .spec(getReq())
                 .queryParam("userId", "1")
                 .when()
                 .get("posts")
