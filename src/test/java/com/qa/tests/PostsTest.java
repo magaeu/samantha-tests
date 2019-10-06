@@ -168,17 +168,7 @@ public class PostsTest extends BaseTest {
 
         assertThat(postsUser.length).isGreaterThan(0);
         assertThat(postsUser.length).isEqualTo(10);
-        List<String> postsUserIds = mapToUserIds(Arrays.asList(postsUser));
-        assertThat(postsUserIds).containsOnly(userId);
+        assertThat(postsUser).extracting(PostDTO::getUserId).containsOnly(Integer.valueOf(userId));
 
-    }
-
-    private List<String> mapToUserIds(List<PostDTO> postsUser) {
-        return postsUser.stream()
-                .map(PostDTO::getUserId)
-                .collect(toList())
-                .stream()
-                .map(Functions.toStringFunction()::apply)
-                .collect(toList());
     }
 }
