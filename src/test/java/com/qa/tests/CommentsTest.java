@@ -2,14 +2,18 @@ package com.qa.tests;
 
 import com.qa.dto.CommentDTO;
 import com.qa.setup.BaseTest;
+import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import org.apache.http.HttpStatus;
 import org.json.JSONArray;
 import org.junit.Test;
 
+import java.util.List;
+
 import static io.restassured.RestAssured.*;
 import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 
 public class CommentsTest extends BaseTest {
 
@@ -97,6 +101,46 @@ public class CommentsTest extends BaseTest {
 
         assertThat(resp.statusCode()).isEqualTo(HttpStatus.SC_OK);
         assertThat(jsonArray).isEmpty();
+    }
+
+    @Test
+    public void testGetCommentsOfASpecificUsersPost() {
+
+        String userId = given()
+                .spec(getReq())
+                .when()
+                .get("users")
+                .then()
+                .extract()
+                .jsonPath()
+                .getString("find { it.username == 'Samantha' }.id");
+
+        String postId = given()
+                .spec(getReq())
+                .queryParam("userId", userId)
+                .when()
+                .get("posts")
+                .then()
+                .extract()
+                .jsonPath()
+                .getList("id")
+                .get(0)
+                .toString();
+
+        CommentDTO[] commentsPost = given()
+                .spec(getReq())
+                .queryParam("postId", postId)
+                .when()
+                .get("comments")
+                .then()
+                .extract()
+                .response()
+                .as(CommentDTO[].class);
+
+        assertThat(commentsPost.length).isGreaterThan(0);
+        assertThat(commentsPost.length).isEqualTo(5);
+        assertThat(commentsPost[0].getPostId()).isEqualTo(Integer.valueOf(postId));
+
     }
 
 }
