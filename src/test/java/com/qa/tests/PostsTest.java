@@ -1,24 +1,23 @@
 package com.qa.tests;
 
+import com.google.common.base.Functions;
+import com.google.common.collect.Lists;
 import com.qa.dto.PostDTO;
 import com.qa.setup.BaseTest;
-import com.qa.utils.Helpers;
 import io.restassured.response.Response;
-import io.restassured.response.ResponseBody;
-import io.restassured.response.ResponseBodyData;
 import org.apache.http.HttpStatus;
-import org.hamcrest.Matchers;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.List;
-import java.util.regex.Matcher;
 
 import static io.restassured.RestAssured.*;
 import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
-import static junit.framework.TestCase.*;
+import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.*;
 
 public class PostsTest extends BaseTest {
 
@@ -143,5 +142,43 @@ public class PostsTest extends BaseTest {
         assertThat(resp.statusCode()).isEqualTo(HttpStatus.SC_OK);
         assertThat(jsonArray).isEmpty();
 
+    }
+
+    @Test
+    public void testGetPostOfSpecificUser() {
+
+        String userId = given()
+                .spec(getReq())
+                .when()
+                .get("users")
+                .then()
+                .extract()
+                .jsonPath()
+                .getString("find { it.username == 'Samantha' }.id");
+
+        PostDTO[] postsUser = given()
+                .spec(getReq())
+                .queryParam("userId", userId)
+                .when()
+                .get("posts")
+                .then()
+                .extract()
+                .response()
+                .as(PostDTO[].class);
+
+        assertThat(postsUser.length).isGreaterThan(0);
+        assertThat(postsUser.length).isEqualTo(10);
+        List<String> postsUserIds = mapToUserIds(Arrays.asList(postsUser));
+        assertThat(postsUserIds).containsOnly(userId);
+
+    }
+
+    private List<String> mapToUserIds(List<PostDTO> postsUser) {
+        return postsUser.stream()
+                .map(PostDTO::getUserId)
+                .collect(toList())
+                .stream()
+                .map(Functions.toStringFunction()::apply)
+                .collect(toList());
     }
 }
