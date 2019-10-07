@@ -18,7 +18,7 @@ public class UsersTest extends BaseTest {
 
         get(BASE_URL + USERS_RESOURCE)
                 .then()
-                .body(matchesJsonSchemaInClasspath(USER_JSON_PATH));
+                .body(matchesJsonSchemaInClasspath(USERS_JSON_PATH));
 
     }
 

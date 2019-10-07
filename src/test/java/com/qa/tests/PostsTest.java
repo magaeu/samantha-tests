@@ -1,7 +1,5 @@
 package com.qa.tests;
 
-import com.google.common.base.Functions;
-import com.google.common.collect.Lists;
 import com.qa.dto.PostDTO;
 import com.qa.setup.BaseTest;
 import io.restassured.response.Response;
@@ -9,24 +7,19 @@ import org.apache.http.HttpStatus;
 import org.json.JSONArray;
 import org.junit.Test;
 
-import java.util.Arrays;
-import java.util.List;
-
+import static com.qa.utils.Helpers.*;
 import static io.restassured.RestAssured.*;
 import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
-import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.Matchers.*;
 
 public class PostsTest extends BaseTest {
 
     @Test
     public void testValidateSchema() {
 
-        get("https://jsonplaceholder.typicode.com/posts/")
+        get(BASE_URL + POSTS_RESOURCE)
                 .then()
-                .body(matchesJsonSchemaInClasspath("json/posts.json"));
+                .body(matchesJsonSchemaInClasspath(POSTS_JSON_PATH));
 
     }
 
@@ -36,7 +29,7 @@ public class PostsTest extends BaseTest {
         PostDTO[] retrievedPosts = given()
                 .spec(getReq())
                 .when()
-                .get("posts")
+                .get(POSTS_RESOURCE)
                 .then()
                 .extract()
                 .body()
@@ -51,7 +44,7 @@ public class PostsTest extends BaseTest {
     public void testGetAllPostsNotFound() {
 
         Response resp = when()
-                .get("https://jsonplaceholder.typicode.com/postss")
+                .get(BASE_URL + "/postss")
                 .then()
                 .spec(getResp())
                 .extract()
@@ -64,25 +57,19 @@ public class PostsTest extends BaseTest {
     @Test
     public void testGetPostById() {
 
-        PostDTO post = new PostDTO()
-                .setUserId(3)
-                .setId(21)
-                .setTitle("asperiores ea ipsam voluptatibus modi minima quia sint")
-                .setBody("repellat aliquid praesentium dolorem quo\nsed totam minus non itaque\nnihil labore molestiae sunt dolor eveniet hic recusandae veniam\ntempora et tenetur expedita sunt");
-
         PostDTO[] retrievedPosts = given()
                 .spec(getReq())
-                .param("id", "21")
+                .param("id", EXISTING_POST_ID)
                 .when()
-                .get("posts")
+                .get(POSTS_RESOURCE)
                 .then()
                 .extract()
                 .response()
                 .as(PostDTO[].class);
 
         assertThat(retrievedPosts.length).isGreaterThan(0);
-        assertThat(retrievedPosts[0].getUserId()).isEqualTo(post.getUserId());
-        assertThat(retrievedPosts[0].getId()).isEqualTo(post.getId());
+        assertThat(retrievedPosts[0].getUserId()).isEqualTo(EXISTING_POST.getUserId());
+        assertThat(retrievedPosts[0].getId()).isEqualTo(EXISTING_POST.getId());
 
     }
 
@@ -90,7 +77,7 @@ public class PostsTest extends BaseTest {
     public void testGetPostByIdNotFound() {
 
         Response resp = when()
-                .get("https://jsonplaceholder.typicode.com/posts/101")
+                .get(BASE_URL + POSTS_RESOURCE + NON_EXISTING_POST)
                 .then()
                 .spec(getResp())
                 .extract()
@@ -102,27 +89,20 @@ public class PostsTest extends BaseTest {
     @Test
     public void testGetPostsByUserId() {
 
-        PostDTO userPost = new PostDTO()
-                .setUserId(3)
-                .setId(21)
-                .setTitle("asperiores ea ipsam voluptatibus modi minima quia sint")
-                .setBody("repellat aliquid praesentium dolorem quo\nsed totam minus non itaque\nnihil labore molestiae sunt dolor eveniet hic recusandae veniam\ntempora et tenetur expedita sunt");
-
-
         PostDTO[] retrievedPosts = given()
                 .spec(getReq())
-                .queryParam("userId", "3")
+                .queryParam("userId", EXISTING_USER_ID)
                 .when()
-                .get("posts")
+                .get(POSTS_RESOURCE)
                 .then()
                 .extract()
                 .response()
                 .as(PostDTO[].class);
 
         assertThat(retrievedPosts.length).isGreaterThan(0);
-        assertThat(retrievedPosts[0].getUserId()).isEqualTo(userPost.getUserId());
-        assertThat(retrievedPosts[0].getTitle()).isEqualTo(userPost.getTitle());
-        assertThat(retrievedPosts[0].getBody()).isEqualTo(userPost.getBody());
+        assertThat(retrievedPosts[0].getUserId()).isEqualTo(EXISTING_POST.getUserId());
+        assertThat(retrievedPosts[0].getTitle()).isEqualTo(EXISTING_POST.getTitle());
+        assertThat(retrievedPosts[0].getBody()).isEqualTo(EXISTING_POST.getBody());
 
     }
 
@@ -130,7 +110,7 @@ public class PostsTest extends BaseTest {
     public void testGetPostsByUserIdNotExists() {
 
         Response resp = when()
-                .get("https://jsonplaceholder.typicode.com/posts?userId=11")
+                .get(BASE_URL + POSTS_USER_ID_RESOURCE + NON_EXISTING_USER)
                 .then()
                 .spec(getResp())
                 .extract()
@@ -150,7 +130,7 @@ public class PostsTest extends BaseTest {
         String userId = given()
                 .spec(getReq())
                 .when()
-                .get("users")
+                .get(USERS_RESOURCE)
                 .then()
                 .extract()
                 .jsonPath()
@@ -158,9 +138,9 @@ public class PostsTest extends BaseTest {
 
         PostDTO[] postsUser = given()
                 .spec(getReq())
-                .queryParam("userId", userId)
+                .queryParam(USER_ID_PARAM, userId)
                 .when()
-                .get("posts")
+                .get(POSTS_RESOURCE)
                 .then()
                 .extract()
                 .response()
