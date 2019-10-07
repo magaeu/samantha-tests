@@ -35,15 +35,20 @@ jobs: # a collection of steps
       - checkout # check out source code to working directory
       - *restore_tests_cache
       - run:
-          name: Run tests
-          command:
+          name: Run tests and store results
+          command: |
             gradle test
+      - run:
+          name: Store tests results
+          command: |
+            mkdir -p ~/test-results/api-tests/
+            find . -type f -regex ".*/build/test-results/.*xml" -exec cp {} ~/test-results/api-tests \;
+          when: always
       - *save_tests_cache
       - store_test_results:
-          # Upload test results for display in Test Summary: https://circleci.com/docs/2.0/collect-test-data/
-          path: build/test-results/test
-      - store_artifacts: # Upload test results for display in Artifacts: https://circleci.com/docs/2.0/artifacts/
-          path: build/test-results/test
+          path: ~/test-results
+      - store_artifacts:
+          path: ~/test-results/api-tests
           when: always
 
 workflows:
