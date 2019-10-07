@@ -14,9 +14,16 @@ plugins {
     id 'application'
 }
 
+ext {
+
+    assertJVersion = "3.13.2"
+    restAssuredVersion = "4.1.1"
+    junitVersion = "4.12"
+
+}
+
 repositories {
-    // Use jcenter for resolving dependencies.
-    // You can declare any Maven/Ivy/file repository here.
+
     mavenCentral()
 }
 
@@ -25,11 +32,12 @@ dependencies {
     compile 'org.json:json:20180813'
 
     // Use JUnit test framework
-    testImplementation 'io.rest-assured:rest-assured:4.1.1'
-    testImplementation 'io.rest-assured:json-schema-validator:4.1.1'
-    testImplementation 'junit:junit:4.12'
-    testImplementation 'org.assertj:assertj-core:3.13.2'
-
+    testImplementation(
+            "io.rest-assured:rest-assured:${restAssuredVersion}",
+            "io.rest-assured:json-schema-validator:${restAssuredVersion}",
+            "junit:junit:${junitVersion}",
+            "org.assertj:assertj-core:${assertJVersion}"
+    )
 
 }
 
