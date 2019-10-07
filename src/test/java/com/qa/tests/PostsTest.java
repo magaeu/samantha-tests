@@ -51,6 +51,7 @@ public class PostsTest extends BaseTest {
                 .response();
 
         assertThat(resp.statusCode()).isEqualTo(HttpStatus.SC_NOT_FOUND);
+        assertThat(resp.getHeader("server")).isEqualTo(SERVER_NAME);
 
     }
 
@@ -84,6 +85,7 @@ public class PostsTest extends BaseTest {
                 .response();
 
         assertThat(resp.statusCode()).isEqualTo(HttpStatus.SC_NOT_FOUND);
+        assertThat(resp.getHeader("server")).isEqualTo(SERVER_NAME);
 
     }
     @Test

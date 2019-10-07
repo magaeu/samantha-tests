@@ -2,27 +2,24 @@ package com.qa.tests;
 
 import com.qa.dto.CommentDTO;
 import com.qa.setup.BaseTest;
-import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import org.apache.http.HttpStatus;
 import org.json.JSONArray;
 import org.junit.Test;
 
-import java.util.List;
-
+import static com.qa.utils.Helpers.*;
 import static io.restassured.RestAssured.*;
 import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.equalTo;
 
 public class CommentsTest extends BaseTest {
 
     @Test
     public void testValidateSchema() {
 
-        get("https://jsonplaceholder.typicode.com/comments/")
+        get(BASE_URL + COMMENTS_RESOURCE)
                 .then()
-                .body(matchesJsonSchemaInClasspath("json/comments.json"));
+                .body(matchesJsonSchemaInClasspath(COMMENTS_JSON_PATH));
 
     }
 
@@ -32,7 +29,7 @@ public class CommentsTest extends BaseTest {
         CommentDTO[] retrievedComments = given()
                 .spec(getReq())
                 .when()
-                .get("comments")
+                .get(COMMENTS_RESOURCE)
                 .then()
                 .extract()
                 .body()
@@ -48,41 +45,34 @@ public class CommentsTest extends BaseTest {
     public void testGetAllCommentsNotFound() {
 
         Response resp = when()
-                .get("https://jsonplaceholder.typicode.com/commentss")
+                .get(BASE_URL + "/commentss")
                 .then()
                 .spec(getResp())
                 .extract()
                 .response();
 
         assertThat(resp.statusCode()).isEqualTo(HttpStatus.SC_NOT_FOUND);
-        assertThat(resp.getHeader("server")).isEqualTo("cloudflare");
+        assertThat(resp.getHeader("server")).isEqualTo(SERVER_NAME);
 
     }
 
     @Test
     public void testGetCommentsByPostId() {
 
-        CommentDTO comment = new CommentDTO()
-                .setPostId(21)
-                .setId(101)
-                .setName("perspiciatis magnam ut eum autem similique explicabo expedita")
-                .setEmail("Lura@rod.tv")
-                .setBody("ut aut maxime officia sed aliquam et magni autem\nveniam repudiandae nostrum odio enim eum optio aut\nomnis illo quasi quibusdam inventore explicabo\nreprehenderit dolor saepe possimus molestiae");
-
         CommentDTO[] retrievedComments = given()
                 .spec(getReq())
-                .param("postId", "21")
+                .param(POST_ID_PARAM, EXISTING_POST_ID)
                 .when()
-                .get("comments")
+                .get(COMMENTS_RESOURCE)
                 .then()
                 .extract()
                 .response()
                 .as(CommentDTO[].class);
 
         assertThat(retrievedComments.length).isGreaterThan(0);
-        assertThat(retrievedComments[0].getPostId()).isEqualTo(comment.getPostId());
-        assertThat(retrievedComments[0].getEmail()).isEqualTo(comment.getEmail());
-        assertThat(retrievedComments[0].getBody()).isEqualTo(comment.getBody());
+        assertThat(retrievedComments[0].getPostId()).isEqualTo(EXISTING_COMMENT.getPostId());
+        assertThat(retrievedComments[0].getEmail()).isEqualTo(EXISTING_COMMENT.getEmail());
+        assertThat(retrievedComments[0].getBody()).isEqualTo(EXISTING_COMMENT.getBody());
 
     }
 
@@ -90,7 +80,7 @@ public class CommentsTest extends BaseTest {
     public void testGetCommentsPostNotExists() {
 
         Response resp = when()
-                .get("https://jsonplaceholder.typicode.com/comments?postId=101")
+                .get(BASE_URL + POSTS_USER_ID_RESOURCE + NON_EXISTING_POST)
                 .then()
                 .spec(getResp())
                 .extract()
@@ -109,7 +99,7 @@ public class CommentsTest extends BaseTest {
         String userId = given()
                 .spec(getReq())
                 .when()
-                .get("users")
+                .get(USERS_RESOURCE)
                 .then()
                 .extract()
                 .jsonPath()
@@ -117,9 +107,9 @@ public class CommentsTest extends BaseTest {
 
         String postId = given()
                 .spec(getReq())
-                .queryParam("userId", userId)
+                .queryParam(USER_ID_PARAM, userId)
                 .when()
-                .get("posts")
+                .get(POSTS_RESOURCE)
                 .then()
                 .extract()
                 .jsonPath()
@@ -129,9 +119,9 @@ public class CommentsTest extends BaseTest {
 
         CommentDTO[] commentsPost = given()
                 .spec(getReq())
-                .queryParam("postId", postId)
+                .queryParam(POST_ID_PARAM, postId)
                 .when()
-                .get("comments")
+                .get(COMMENTS_RESOURCE)
                 .then()
                 .extract()
                 .response()
@@ -139,7 +129,7 @@ public class CommentsTest extends BaseTest {
 
         assertThat(commentsPost.length).isGreaterThan(0);
         assertThat(commentsPost.length).isEqualTo(5);
-        assertThat(commentsPost[0].getPostId()).isEqualTo(Integer.valueOf(postId));
+        assertThat(commentsPost).extracting(CommentDTO::getPostId).containsOnly(Integer.valueOf(postId));
 
     }
 
