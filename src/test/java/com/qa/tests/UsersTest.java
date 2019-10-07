@@ -2,11 +2,11 @@ package com.qa.tests;
 
 import com.qa.dto.UserDTO;
 import com.qa.setup.BaseTest;
-import com.qa.utils.Helpers;
 import io.restassured.response.Response;
 import org.apache.http.HttpStatus;
 import org.junit.Test;
 
+import static com.qa.utils.Helpers.*;
 import static io.restassured.RestAssured.*;
 import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -16,9 +16,9 @@ public class UsersTest extends BaseTest {
     @Test
     public void testValidateSchema() {
 
-        get("https://jsonplaceholder.typicode.com/users")
+        get(BASE_URL + USERS_RESOURCE)
                 .then()
-                .body(matchesJsonSchemaInClasspath("json/users.json"));
+                .body(matchesJsonSchemaInClasspath(USER_JSON_PATH));
 
     }
 
@@ -28,7 +28,7 @@ public class UsersTest extends BaseTest {
         UserDTO[] retrievedUsers = given()
                 .spec(getReq())
                 .when()
-                .get("users")
+                .get(USERS_RESOURCE)
                 .then()
                 .extract()
                 .body()
@@ -43,7 +43,7 @@ public class UsersTest extends BaseTest {
     public void testGetAllUsersNotFound() {
 
         Response resp = when()
-                .get("https://jsonplaceholder.typicode.com/userss")
+                .get(BASE_URL + "/userss")
                 .then()
                 .spec(getResp())
                 .extract()
@@ -56,24 +56,19 @@ public class UsersTest extends BaseTest {
     @Test
     public void testGetUserById() {
 
-        UserDTO newUser = new UserDTO()
-                .setName("Clementine Bauch")
-                .setUsername("Samantha")
-                .setEmail("Nathan@yesenia.net");
-
         UserDTO[] retrievedUser = given()
                 .spec(getReq())
-                .param("id", "3")
+                .param("id", EXISTING_USER_ID)
                 .when()
-                .get("users")
+                .get(USERS_RESOURCE)
                 .then()
                 .extract()
                 .body()
                 .as(UserDTO[].class);
 
-        assertThat(retrievedUser[0].getName()).isEqualTo(newUser.getName());
-        assertThat(retrievedUser[0].getUsername()).isEqualTo(newUser.getUsername());
-        assertThat(retrievedUser[0].getEmail()).isEqualTo(newUser.getEmail());
+        assertThat(retrievedUser[0].getName()).isEqualTo(EXISTING_USER.getName());
+        assertThat(retrievedUser[0].getUsername()).isEqualTo(EXISTING_USER.getUsername());
+        assertThat(retrievedUser[0].getEmail()).isEqualTo(EXISTING_USER.getEmail());
 
     }
 
@@ -81,7 +76,7 @@ public class UsersTest extends BaseTest {
     public void testGetUserByIdNotFound() {
 
         Response resp = when()
-                .get("https://jsonplaceholder.typicode.com/users/11")
+                .get(BASE_URL + USERS_RESOURCE + NON_EXISTING_USER)
                 .then()
                 .spec(getResp())
                 .extract()
