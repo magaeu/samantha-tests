@@ -40,4 +40,5 @@ public class Helpers {
             .setBody("ut aut maxime officia sed aliquam et magni autem" +
                     "\nveniam repudiandae nostrum odio enim eum optio aut" +
                     "\nomnis illo quasi quibusdam inventore explicabo\nreprehenderit dolor saepe possimus molestiae");
+    public static final String EMAIL_REGEX = "^(.+)@(.+)$";
 }

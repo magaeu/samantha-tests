@@ -4,8 +4,12 @@ import com.qa.dto.CommentDTO;
 import com.qa.setup.BaseTest;
 import io.restassured.response.Response;
 import org.apache.http.HttpStatus;
+import org.hamcrest.Matchers;
 import org.json.JSONArray;
 import org.junit.Test;
+
+import java.util.Arrays;
+import java.util.regex.Pattern;
 
 import static com.qa.utils.Helpers.*;
 import static io.restassured.RestAssured.*;
@@ -127,9 +131,12 @@ public class CommentsTest extends BaseTest {
                 .response()
                 .as(CommentDTO[].class);
 
+        Pattern pattern = Pattern.compile(EMAIL_REGEX);
+
         assertThat(commentsPost.length).isGreaterThan(0);
         assertThat(commentsPost.length).isEqualTo(5);
         assertThat(commentsPost).extracting(CommentDTO::getPostId).containsOnly(Integer.valueOf(postId));
+        Arrays.stream(commentsPost).map(CommentDTO::getEmail).forEach(email -> assertThat(email).matches(pattern));
 
     }
 
