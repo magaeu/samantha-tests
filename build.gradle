@@ -37,11 +37,7 @@ dependencies {
             "io.rest-assured:json-schema-validator:${restAssuredVersion}",
             "junit:junit:${junitVersion}",
             "org.assertj:assertj-core:${assertJVersion}"
+
     )
 
-}
-
-application {
-    // Define the main class for the application
-    mainClassName = 'samantha.tests.App'
 }
