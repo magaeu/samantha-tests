@@ -1,7 +1,5 @@
 package com.qa.dto;
 
-import java.util.Objects;
-
 public class GeoDTO {
 
     private String lat;
@@ -14,37 +12,18 @@ public class GeoDTO {
         return lat;
     }
 
-    public void setLat(String lat) {
+    public GeoDTO setLat(String lat) {
         this.lat = lat;
+        return this;
     }
 
     public String getLng() {
         return lng;
     }
 
-    public void setLng(String lng) {
+    public GeoDTO setLng(String lng) {
         this.lng = lng;
+        return this;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        GeoDTO geoDTO = (GeoDTO) o;
-        return Objects.equals(lat, geoDTO.lat) &&
-                Objects.equals(lng, geoDTO.lng);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(lat, lng);
-    }
-
-    @Override
-    public String toString() {
-        return "GeoDTO{" +
-                "lat='" + lat + '\'' +
-                ", lng='" + lng + '\'' +
-                '}';
-    }
 }

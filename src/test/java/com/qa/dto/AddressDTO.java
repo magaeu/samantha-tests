@@ -1,7 +1,5 @@
 package com.qa.dto;
 
-import java.util.Objects;
-
 public class AddressDTO {
 
     private String street;
@@ -17,67 +15,45 @@ public class AddressDTO {
         return street;
     }
 
-    public void setStreet(String street) {
+    public AddressDTO setStreet(String street) {
         this.street = street;
+        return this;
     }
 
     public String getSuite() {
         return suite;
     }
 
-    public void setSuite(String suite) {
+    public AddressDTO setSuite(String suite) {
         this.suite = suite;
+        return this;
     }
 
     public String getCity() {
         return city;
     }
 
-    public void setCity(String city) {
+    public AddressDTO setCity(String city) {
         this.city = city;
+        return this;
     }
 
     public String getZipcode() {
         return zipcode;
     }
 
-    public void setZipcode(String zipcode) {
+    public AddressDTO setZipcode(String zipcode) {
         this.zipcode = zipcode;
+        return this;
     }
 
     public GeoDTO getGeo() {
         return geo;
     }
 
-    public void setGeo(GeoDTO geo) {
+    public AddressDTO setGeo(GeoDTO geo) {
         this.geo = geo;
+        return this;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        AddressDTO that = (AddressDTO) o;
-        return Objects.equals(street, that.street) &&
-                Objects.equals(suite, that.suite) &&
-                Objects.equals(city, that.city) &&
-                Objects.equals(zipcode, that.zipcode) &&
-                Objects.equals(geo, that.geo);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(street, suite, city, zipcode, geo);
-    }
-
-    @Override
-    public String toString() {
-        return "AddressDTO{" +
-                "street='" + street + '\'' +
-                ", suite='" + suite + '\'' +
-                ", city='" + city + '\'' +
-                ", zipcode='" + zipcode + '\'' +
-                ", geo=" + geo +
-                '}';
-    }
 }
